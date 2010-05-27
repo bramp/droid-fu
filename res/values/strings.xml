@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="test">test</string>
+    <!-- Some default values for dialogs -->
+    <string name="droidfu_progress_dialog_title">Progress Title</string>
+    <string name="droidfu_progress_dialog_message">Progress Dialog</string>
+    <string name="droidfu_error_dialog_title">Error Dialog</string>
+    <string name="droidfu_dialog_button_send_error_report">Send Error Report</string>
+
+    <string name="droidfu_error_report_email_address"></string>
+    <string name="droidfu_error_report_email_subject">Bug Report</string>
 </resources>

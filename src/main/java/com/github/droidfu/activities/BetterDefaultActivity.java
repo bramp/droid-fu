@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 
+import com.github.droidfu.R;
 import com.github.droidfu.DroidFuApplication;
 import com.github.droidfu.dialogs.DialogClickListener;
 
@@ -140,8 +141,7 @@ public class BetterDefaultActivity extends Activity implements BetterActivity {
     }
 
     public AlertDialog newErrorHandlerDialog(Exception error) {
-        return newErrorHandlerDialog(getResources().getIdentifier(
-            BetterActivityHelper.ERROR_DIALOG_TITLE_RESOURCE, "string", getPackageName()), error);
+        return newErrorHandlerDialog(R.string.droidfu_error_dialog_title, error);
     }
 
     public <T> Dialog newListDialog(List<T> elements, DialogClickListener<T> listener,

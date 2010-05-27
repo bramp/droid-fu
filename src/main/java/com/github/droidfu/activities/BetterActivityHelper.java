@@ -33,18 +33,13 @@ import android.content.DialogInterface.OnKeyListener;
 import android.view.KeyEvent;
 import android.view.Window;
 
+import com.github.droidfu.R;
 import com.github.droidfu.dialogs.DialogClickListener;
 import com.github.droidfu.exception.ResourceMessageException;
 import com.github.droidfu.support.DiagnosticSupport;
 import com.github.droidfu.support.IntentSupport;
 
 public class BetterActivityHelper {
-
-    private static final String PROGRESS_DIALOG_TITLE_RESOURCE = "droidfu_progress_dialog_title";
-
-    private static final String PROGRESS_DIALOG_MESSAGE_RESOURCE = "droidfu_progress_dialog_message";
-
-    public static final String ERROR_DIALOG_TITLE_RESOURCE = "droidfu_error_dialog_title";
 
     // FIXME: this method currently doesn't work as advertised
     public static int getWindowFeatures(Activity activity) {
@@ -76,13 +71,11 @@ public class BetterActivityHelper {
             int progressDialogTitleId, int progressDialogMsgId) {
         ProgressDialog progressDialog = new ProgressDialog(activity);
         if (progressDialogTitleId <= 0) {
-            progressDialogTitleId = activity.getResources().getIdentifier(
-                PROGRESS_DIALOG_TITLE_RESOURCE, "string", activity.getPackageName());
+            progressDialogTitleId = R.string.droidfu_progress_dialog_title;
         }
         progressDialog.setTitle(progressDialogTitleId);
         if (progressDialogMsgId <= 0) {
-            progressDialogMsgId = activity.getResources().getIdentifier(
-                PROGRESS_DIALOG_MESSAGE_RESOURCE, "string", activity.getPackageName());
+            progressDialogMsgId = R.string.droidfu_progress_dialog_message;
         }
         progressDialog.setMessage(activity.getString(progressDialogMsgId));
         progressDialog.setIndeterminate(true);
@@ -184,25 +177,27 @@ public class BetterActivityHelper {
 
         if (IntentSupport.isIntentAvailable(activity, Intent.ACTION_SEND,
             IntentSupport.MIME_TYPE_EMAIL)) {
-            int buttonId = activity.getResources().getIdentifier(
-                "droidfu_dialog_button_send_error_report", "string", activity.getPackageName());
-            String buttonText = activity.getString(buttonId);
-            int bugEmailAddressId = activity.getResources().getIdentifier(
-                "droidfu_error_report_email_address", "string", activity.getPackageName());
-            String bugReportEmailAddress = activity.getString(bugEmailAddressId);
-            int bugEmailSubjectId = activity.getResources().getIdentifier(
-                "droidfu_error_report_email_subject", "string", activity.getPackageName());
-            String bugReportEmailSubject = activity.getString(bugEmailSubjectId);
-            final String diagnosis = DiagnosticSupport.createDiagnosis(activity, error);
-            final Intent intent = IntentSupport.newEmailIntent(activity, bugReportEmailAddress,
-                bugReportEmailSubject, diagnosis);
-            builder.setNegativeButton(buttonText, new OnClickListener() {
+            int buttonId          = R.string.droidfu_dialog_button_send_error_report;
+            int bugEmailAddressId = R.string.droidfu_error_report_email_address;
+            int bugEmailSubjectId = R.string.droidfu_error_report_email_subject;
 
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                    activity.startActivity(intent);
-                }
-            });
+            // Only show the send error button if the bug email address is set
+            String bugReportEmailAddress = activity.getString(bugEmailAddressId);
+            if (bugReportEmailAddress.length() > 0) {
+                String buttonText = activity.getString(buttonId);
+
+                String bugReportEmailSubject = activity.getString(bugEmailSubjectId);
+                final String diagnosis = DiagnosticSupport.createDiagnosis(activity, error);
+                final Intent intent = IntentSupport.newEmailIntent(activity, bugReportEmailAddress,
+                    bugReportEmailSubject, diagnosis);
+                builder.setNegativeButton(buttonText, new OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        activity.startActivity(intent);
+                    }
+                });
+            }
         }
 
         return builder.create();

@@ -25,6 +25,7 @@ import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.widget.ListAdapter;
 
+import com.github.droidfu.R;
 import com.github.droidfu.DroidFuApplication;
 import com.github.droidfu.adapters.ListAdapterWithProgress;
 import com.github.droidfu.dialogs.DialogClickListener;
@@ -159,8 +160,7 @@ public class BetterListActivity extends ListActivity implements BetterActivity {
     }
 
     public AlertDialog newErrorHandlerDialog(Exception error) {
-        return newErrorHandlerDialog(getResources().getIdentifier(
-            BetterActivityHelper.ERROR_DIALOG_TITLE_RESOURCE, "string", getPackageName()), error);
+        return newErrorHandlerDialog(R.string.droidfu_error_dialog_title, error);
     }
 
     public <T> Dialog newListDialog(List<T> elements, DialogClickListener<T> listener,
