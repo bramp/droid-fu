@@ -62,7 +62,7 @@ public abstract class BetterAsyncTask<ParameterT, ProgressT, ReturnT> extends
 
     private BetterAsyncTaskCallable<ParameterT, ProgressT, ReturnT> callable;
 
-    private int dialogId = 0;
+    private int dialogId = BetterActivity.DIALOG_PROGRESS;
 
     /**
      * Creates a new BetterAsyncTask who displays a progress dialog on the specified Context.

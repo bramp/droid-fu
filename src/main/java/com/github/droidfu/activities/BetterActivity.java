@@ -26,11 +26,25 @@ import com.github.droidfu.dialogs.DialogClickListener;
 
 public interface BetterActivity {
 
+    public static final int DIALOG_PROGRESS = 0;
+
     public int getWindowFeatures();
 
-    public void setProgressDialogTitleId(int progressDialogTitleId);
+    /**
+     * Sets the current progress dialog's title, or if no dialog is displayed sets the
+     * title for the next progress dialog.
+     *
+     * @param progressDialogTitle The new title
+     */
+    public void setProgressDialogTitle(CharSequence progressDialogTitle);
 
-    public void setProgressDialogMsgId(int progressDialogMsgId);
+    /**
+     * Sets the current progress dialog's message, or if no dialog is displayed sets the
+     * message for the next progress dialog.
+     *
+     * @param progressDialogMsg The new message
+     */
+    public void setProgressDialogMsg(CharSequence progressDialogMsg);
 
     /**
      * @return true, if the activity is recovering from in interruption (i.e.
@@ -76,6 +90,13 @@ public interface BetterActivity {
     public boolean isLandscapeMode();
 
     public boolean isPortraitMode();
+
+    /**
+     * Retreives the currently displaying managed {@link Dialog}. That is, a dialog created
+     * through the onCreateDialog() method.
+     * @return The currently displaying Dialog, or null if none is being displayed.
+     */
+    public Dialog getCurrentDialog();
 
     public AlertDialog newYesNoDialog(int titleResourceId, int messageResourceId,
             OnClickListener listener);

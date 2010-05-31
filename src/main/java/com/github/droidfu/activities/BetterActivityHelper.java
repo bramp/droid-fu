@@ -39,7 +39,7 @@ import com.github.droidfu.exception.ResourceMessageException;
 import com.github.droidfu.support.DiagnosticSupport;
 import com.github.droidfu.support.IntentSupport;
 
-public class BetterActivityHelper {
+public abstract class BetterActivityHelper {
 
     // FIXME: this method currently doesn't work as advertised
     public static int getWindowFeatures(Activity activity) {
@@ -62,25 +62,27 @@ public class BetterActivityHelper {
     /**
      * Creates a new ProgressDialog
      *
-     * @param activity
-     * @param progressDialogTitleId The resource id for the title. If this is less than or equal to 0, a default title is used.
-     * @param progressDialogMsgId   The resource id for the message.
+     * @param context       The context to create this ProgressDialog.
+     * @param dialogTitle   The dialog's title. A null value means no title is displayed.
+     * @param dialogMessage The dialog's message.
      * @return The new dialog
      */
-    public static ProgressDialog createProgressDialog(final Activity activity,
-            int progressDialogTitleId, int progressDialogMsgId) {
-        ProgressDialog progressDialog = new ProgressDialog(activity);
-        if (progressDialogTitleId <= 0) {
-            progressDialogTitleId = R.string.droidfu_progress_dialog_title;
+    public static ProgressDialog newProgressDialog(final Context context,
+            CharSequence dialogTitle, CharSequence dialogMessage) {
+
+        final ProgressDialog progressDialog = new ProgressDialog(context);
+
+        if (dialogTitle != null) {
+            progressDialog.setTitle(dialogTitle);
         }
-        progressDialog.setTitle(progressDialogTitleId);
-        if (progressDialogMsgId <= 0) {
-            progressDialogMsgId = R.string.droidfu_progress_dialog_message;
-        }
-        progressDialog.setMessage(activity.getString(progressDialogMsgId));
+
+        progressDialog.setMessage(dialogMessage);
         progressDialog.setIndeterminate(true);
         progressDialog.setOnKeyListener(new OnKeyListener() {
             public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                // HACK We do something naughty by casting the DialogInterface to a Dialog.
+                // Perhaps look at using getCallingContext from BetterAsyncTask?
+                Activity activity = ((Dialog)dialog).getOwnerActivity();
                 activity.onKeyDown(keyCode, event);
                 return false;
             }

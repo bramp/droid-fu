@@ -15,11 +15,13 @@
 
 package com.github.droidfu.activities;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
@@ -36,11 +38,16 @@ public class BetterListActivity extends ListActivity implements BetterActivity {
 
     private boolean wasCreated, wasInterrupted;
 
-    private int progressDialogTitleId;
-
-    private int progressDialogMsgId;
+    // TODO Save/Restore these variables
+    private CharSequence progressDialogTitle;
+    private CharSequence progressDialogMsg;
 
     private Intent currentIntent;
+
+    /**
+     * The Dialog currently being displayed
+     */
+    private WeakReference<Dialog> dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,16 +102,53 @@ public class BetterListActivity extends ListActivity implements BetterActivity {
 
     @Override
     protected Dialog onCreateDialog(int id) {
-        return BetterActivityHelper.createProgressDialog(this, progressDialogTitleId,
-            progressDialogMsgId);
+        if (id == DIALOG_PROGRESS)
+            return BetterActivityHelper.newProgressDialog(this, progressDialogTitle, progressDialogMsg);
+        return null;
+    }
+/*
+    @Override
+    protected void onPrepareDialog(int id, Dialog dialog) {
+        super.onPrepareDialog(id, dialog);
+
+        // Store a weak reference to this dialog. It is not a strong reference
+        // because we are unsure when the dialog is finally dismissed, thus we
+        // might hold onto a old reference. So instead this way we still let
+        // the garbage collector run.
+        this.dialog = new WeakReference<Dialog>(dialog);
+
+        // Ensure the title/message is current
+        if (id == DIALOG_PROGRESS) {
+            ProgressDialog progressDialog = (ProgressDialog) dialog;
+            if (progressDialogTitle != null) {
+                progressDialog.setTitle(progressDialogTitle);
+            }
+
+            progressDialog.setMessage(progressDialogMsg);
+        }
+    }
+*/
+    public Dialog getCurrentDialog() {
+        final Dialog d = dialog != null ? dialog.get() : null;
+        if (d != null && d.isShowing())
+            return d;
+        return null;
     }
 
-    public void setProgressDialogTitleId(int progressDialogTitleId) {
-        this.progressDialogTitleId = progressDialogTitleId;
+    public void setProgressDialogTitle(CharSequence progressDialogTitle) {
+        this.progressDialogTitle = progressDialogTitle;
+
+        final Dialog dialog = getCurrentDialog();
+        if (dialog != null && dialog instanceof ProgressDialog)
+            dialog.setTitle(progressDialogTitle);
     }
 
-    public void setProgressDialogMsgId(int progressDialogMsgId) {
-        this.progressDialogMsgId = progressDialogMsgId;
+    public void setProgressDialogMsg(CharSequence progressDialogMsg) {
+        this.progressDialogMsg = progressDialogMsg;
+
+        final Dialog dialog = getCurrentDialog();
+        if (dialog != null && dialog instanceof ProgressDialog)
+            ((ProgressDialog)dialog).setMessage(progressDialogMsg);
     }
 
     public int getWindowFeatures() {
