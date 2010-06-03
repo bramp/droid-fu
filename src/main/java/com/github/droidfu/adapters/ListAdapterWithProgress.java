@@ -19,37 +19,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
-import android.app.ListActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ListView;
 
 public abstract class ListAdapterWithProgress<T> extends BaseAdapter {
 
-    private boolean isLoadingData;
+    public final static int ITEM_VIEW_TYPE_PROGRESS = 0;
+    public final static int ITEM_VIEW_TYPE_NORMAL   = 1;
 
-    private View progressView;
+    private boolean isLoadingData;
 
     protected List<T> data = new ArrayList<T>();
 
-    protected Activity activity;
-
-    protected ListView listView;
-
     protected LayoutInflater inflater;
 
-    public ListAdapterWithProgress(ListActivity activity, int progressDrawableResourceId) {
-        this(activity, activity.getListView(), progressDrawableResourceId);
-    }
+    int progressDrawableResourceId;
 
-    public ListAdapterWithProgress(Activity activity, ListView listView, int progressDrawableResourceId) {
-        this.activity = activity;
-        this.listView = listView;
-        this.progressView = activity.getLayoutInflater().inflate(progressDrawableResourceId,
-            listView, false);
-        this.inflater = LayoutInflater.from(activity);
+    public ListAdapterWithProgress(Activity activity, int progressDrawableResourceId) {
+        this.inflater = activity.getLayoutInflater();
+        this.progressDrawableResourceId = progressDrawableResourceId;
     }
 
     /**
@@ -107,6 +97,18 @@ public abstract class ListAdapterWithProgress<T> extends BaseAdapter {
         return data.get(position);
     }
 
+    @Override
+    public int getViewTypeCount() {
+        return 2;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (isPositionOfProgressElement(position))
+            return ITEM_VIEW_TYPE_PROGRESS;
+        return ITEM_VIEW_TYPE_NORMAL;
+    }
+
     public long getItemId(int position) {
         return position;
     }
@@ -135,12 +137,10 @@ public abstract class ListAdapterWithProgress<T> extends BaseAdapter {
 
     public final View getView(int position, View convertView, ViewGroup parent) {
         if (isPositionOfProgressElement(position)) {
-            return progressView;
-        }
+            if (convertView != null)
+                return convertView;
 
-        if (convertView == progressView) {
-            // make sure the progress view is never used as a convert view
-            convertView = null;
+            return inflater.inflate(progressDrawableResourceId, parent, false);
         }
 
         return doGetView(position, convertView, parent);
@@ -148,7 +148,7 @@ public abstract class ListAdapterWithProgress<T> extends BaseAdapter {
 
     protected abstract View doGetView(int position, View convertView, ViewGroup parent);
 
-    private boolean isPositionOfProgressElement(int position) {
+    protected boolean isPositionOfProgressElement(int position) {
         return isLoadingData && position == data.size();
     }
 
