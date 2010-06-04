@@ -109,6 +109,12 @@ public abstract class ListAdapterWithProgress<T> extends BaseAdapter {
         return ITEM_VIEW_TYPE_NORMAL;
     }
 
+    @Override
+    public boolean hasStableIds() {
+        // IDs are not stable as they are based on the position, not the object
+        return false;
+    }
+
     public long getItemId(int position) {
         return position;
     }
